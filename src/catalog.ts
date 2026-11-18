@@ -672,6 +672,9 @@ export const NOT_WASTE: NotWasteLabel[] = [
   { id: 'animal', prompts: ['a dog', 'a cat'] },
   { id: 'scene', prompts: ['a city street', 'a landscape', 'a living room interior'] },
   { id: 'screen', prompts: ['a screenshot of a phone screen with text', 'a document full of text'] },
+  { id: 'stage', prompts: ['a musician performing on a stage', 'a crowd at a concert'] },
+  { id: 'nature', prompts: ['a tree in a park', 'rocks and soil on the ground', 'a mountain landscape'] },
+  { id: 'abstract', prompts: ['an abstract pattern', 'a diagram or illustration', 'a close-up of a texture'] },
 ];
 
 const BY_ID = new Map(ITEMS.map((i) => [i.id, i]));

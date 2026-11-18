@@ -85,7 +85,7 @@ describe('decide', () => {
   const r = (id: string, prob: number, kind: Ranked['kind'] = 'item'): Ranked => ({ id, kind, prob, match: 0.5 });
 
   it('is confident when one item dominates', () => {
-    const d = decide([r('pet', 0.9), r('jar', 0.05), r('box', 0.05)], streamOf);
+    const d = decide([r('pet', 0.94), r('jar', 0.03), r('box', 0.03)], streamOf);
     expect(d).toMatchObject({ verdict: 'confident', stream: 'yellow', itemId: 'pet' });
   });
 

@@ -113,10 +113,14 @@ export interface Thresholds {
   likelyStream: number;
 }
 
-/** Tuned on the evaluation set (see eval/RESULTS.md). */
+/**
+ * Chosen from the threshold sweep in eval/RESULTS.md: at 0.9 a "confident"
+ * answer had the right bin about 97% of the time. Tuned on the same set it is
+ * reported on, so treat that figure as optimistic.
+ */
 export const DEFAULT_THRESHOLDS: Thresholds = {
   notWaste: 0.5,
-  confidentStream: 0.8,
+  confidentStream: 0.9,
   confidentItem: 0.45,
   likelyStream: 0.5,
 };

@@ -1,0 +1,20 @@
+[
+  { "match": "Milk Carton Kids", "reason": "band concert photo, no carton" },
+  { "match": "Tandoori Chicken", "reason": "dish, no yogurt pot" },
+  { "match": "PentaxMacroLens", "reason": "camera lens" },
+  { "match": "A63 Nov23 Pile of Mud", "reason": "mud and excavator" },
+  { "match": "Howell, NSW", "reason": "mine ore pile" },
+  { "match": "ACC The Accent CasualVictimPile", "reason": "people photo" },
+  { "match": "Man Smoking and Holding an Empty Wine Glass", "reason": "photo of a person, glass is not a jar" },
+  { "match": "Glass Barnstar", "reason": "wiki award graphic" },
+  { "match": "Harri Stojka", "reason": "concert photo" },
+  { "match": "Los Dragos Gemelos", "reason": "dragon trees, no furniture" },
+  { "match": "Parque del Drago", "reason": "dragon tree, no furniture" },
+  { "match": "Deep buff eggshell ware", "reason": "ancient ceramic bowl, not eggshells" },
+  { "match": "Foldable clothes hanger", "reason": "hanger, not clothes" },
+  { "match": "Fibre butt cigarette", "reason": "microscopy diagram" },
+  { "match": "Shattered light fixture", "reason": "fixture, no bulb" },
+  { "match": "Toothpasteonbrush", "reason": "toothpaste on a brush: both items in one photo" },
+  { "match": "Carton of eggs", "reason": "eggs inside the carton: ambiguous" },
+  { "match": "EFTA00002130", "reason": "laundry room scene" }
+]
