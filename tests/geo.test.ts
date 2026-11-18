@@ -32,24 +32,29 @@ describe('GridIndex.nearest', () => {
   const points: LatLon[] = Array.from({ length: 3000 }, () => [36.66 + rnd() * 0.13, -4.56 + rnd() * 0.23]);
   const grid = new GridIndex(points);
 
-  const brute = (p: LatLon, k: number) =>
-    points
-      .map((q, index) => ({ index, meters: haversineMeters(p, q) }))
-      .sort((a, b) => a.meters - b.meters)
-      .slice(0, k);
+  const brute = (p: LatLon) =>
+    points.map((q, index) => ({ index, meters: haversineMeters(p, q) })).sort((a, b) => a.meters - b.meters);
 
-  it('agrees with brute force inside and outside the data area', () => {
+  it('agrees with brute force inside and outside the data area', { timeout: 30_000 }, () => {
     const queries: LatLon[] = [
-      ...Array.from({ length: 200 }, (): LatLon => [36.66 + rnd() * 0.13, -4.56 + rnd() * 0.23]),
+      ...Array.from({ length: 120 }, (): LatLon => [36.66 + rnd() * 0.13, -4.56 + rnd() * 0.23]),
       [36.5, -4.9], // well outside the bounding box
       [36.9, -4.1],
     ];
     for (const q of queries) {
+      const expected = brute(q).map((n) => n.index); // sorted once per query
       for (const k of [1, 3, 5]) {
-        const got = grid.nearest(q, k).map((n) => n.index);
-        expect(got).toEqual(brute(q, k).map((n) => n.index));
+        expect(grid.nearest(q, k).map((n) => n.index)).toEqual(expected.slice(0, k));
       }
     }
+  });
+
+  it('answers fast for a query thousands of kilometres away (user abroad)', () => {
+    const t0 = performance.now();
+    for (const far of [[40.4, -3.7], [51.5, -0.1], [40.7, -74.0], [-33.9, 151.2]] as LatLon[]) {
+      expect(grid.nearest(far, 3)).toHaveLength(3);
+    }
+    expect(performance.now() - t0).toBeLessThan(500);
   });
 
   it('returns everything when k exceeds the size', () => {

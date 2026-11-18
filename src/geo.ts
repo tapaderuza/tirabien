@@ -90,16 +90,31 @@ export class GridIndex {
       Math.abs(cy - this.maxY),
     );
     const found: Nearest[] = [];
-    for (let r = 0; r <= maxRing; r++) {
+    // Rings closer than the data's cell bounding box are empty: skip straight to the first that can hold points.
+    const r0 = Math.max(0, this.minX - cx, cx - this.maxX, this.minY - cy, cy - this.maxY);
+    if (r0 > 40) {
+      // Far outside the data (a user abroad): ring search would take thousands of rings, a scan is trivial.
+      return this.points
+        .map((point, index) => ({ point, index, meters: haversineMeters(p, point) }))
+        .sort((a, b) => a.meters - b.meters)
+        .slice(0, k);
+    }
+    const visit = (x: number, y: number) => {
+      const bucket = this.cells.get(`${x}:${y}`);
+      if (!bucket) return;
+      for (const i of bucket) {
+        const point = this.points[i]!;
+        found.push({ point, index: i, meters: haversineMeters(p, point) });
+      }
+    };
+    for (let r = r0; r <= maxRing; r++) {
+      // Walk only the perimeter of ring r, not the whole square.
       for (let dx = -r; dx <= r; dx++) {
-        for (let dy = -r; dy <= r; dy++) {
-          if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
-          const bucket = this.cells.get(`${cx + dx}:${cy + dy}`);
-          if (!bucket) continue;
-          for (const i of bucket) {
-            const point = this.points[i]!;
-            found.push({ point, index: i, meters: haversineMeters(p, point) });
-          }
+        if (Math.abs(dx) === r) {
+          for (let dy = -r; dy <= r; dy++) visit(cx + dx, cy + dy);
+        } else {
+          visit(cx + dx, cy - r);
+          if (r > 0) visit(cx + dx, cy + r);
         }
       }
       if (found.length >= k) {
