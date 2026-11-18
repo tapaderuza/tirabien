@@ -1,0 +1,33 @@
+{
+  "name": "tirabien",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Snap or type any item and learn which Málaga bin it goes in, plus the nearest real container. On-device AI, no account, no photo upload.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "data:containers": "node scripts/fetch-containers.mjs",
+    "data:embeddings": "node scripts/build-embeddings.mjs",
+    "eval": "node scripts/eval-vision.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^4.3.2",
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^26.6.6",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  }
+}
