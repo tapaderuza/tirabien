@@ -6,6 +6,10 @@ Point your phone at any item (or type its name) and TiraBien tells you **which b
 - **The AI never decides the bin.** It only recognises *which catalog item* the photo looks like. The bin comes from 73 hand-written rules based on public Limasam, Ecoembes and Ecovidrio guidance (not audited by Limasam; see Limits). When the model is unsure it says so and asks you to pick.
 - **Real data.** 14,400 container locations: Ayuntamiento de Málaga open data (glass, clothes, oil, batteries; CC BY 4.0) and OpenStreetMap (yellow, blue, grey, brown bins, clean points, pharmacies; ODbL). Nearest-container search uses a grid index verified against brute force.
 
+**Live demo: https://tapaderuza.github.io/tirabien/**
+
+![Search "brik": yellow bin, the common mistake, and the three nearest real yellow containers on the map](docs/screenshot-brik.jpg)
+
 ## Why
 
 In Spain roughly three in ten items in the yellow bin are not packaging at all (Ecoembes' own characterisation figures, 28.6 % in 2020). The mistakes are systematic and predictable: drink cartons put in the blue bin, thermal receipts and dirty napkins treated as paper, drinking glasses in the glass igloo, toys and toothbrushes in the yellow bin because they are plastic. TiraBien answers exactly those cases, with the reason.
