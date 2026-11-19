@@ -13,9 +13,25 @@ const DTYPE = process.env.DTYPE ?? 'q8';
 const bank = decodeBank(JSON.parse(await fs.readFile('public/data/embeddings.json', 'utf8')));
 const processor = await AutoProcessor.from_pretrained(MODEL);
 const vision = await SiglipVisionModel.from_pretrained(MODEL, { dtype: DTYPE });
-const manifest = JSON.parse(await fs.readFile('eval/images/manifest.json', 'utf8'));
+// EVAL_DIR=eval/phone EVAL_OUT=eval/RESULTS-phone.md npm run eval  -> your own phone photos,
+// one folder per catalog item id (eval/phone/battery/1.jpg ...). Default: the Commons set.
+const DIR = process.env.EVAL_DIR ?? 'eval/images';
+const OUT = process.env.EVAL_OUT ?? 'eval/RESULTS.md';
+const OWN = !!process.env.EVAL_DIR;
+let manifest;
+if (OWN) {
+  manifest = {};
+  for (const d of await fs.readdir(DIR, { withFileTypes: true })) {
+    if (!d.isDirectory()) continue;
+    const files = (await fs.readdir(`${DIR}/${d.name}`)).filter((f) => /\.(jpe?g|png|webp)$/i.test(f));
+    if (!itemById(d.name)) console.warn(`skipping folder "${d.name}": not a catalog item id`);
+    else if (files.length) manifest[d.name] = files.map((file) => ({ file, title: file }));
+  }
+} else {
+  manifest = JSON.parse(await fs.readFile(`${DIR}/manifest.json`, 'utf8'));
+}
 
-const excluded = JSON.parse(await fs.readFile('eval/excluded.json', 'utf8'));
+const excluded = OWN ? [] : JSON.parse(await fs.readFile('eval/excluded.json', 'utf8'));
 let skipped = 0;
 const rows = [];
 const t0 = Date.now();
@@ -25,7 +41,7 @@ for (const [id, files] of Object.entries(manifest)) {
       skipped++;
       continue;
     }
-    const img = await RawImage.read(`eval/images/${id}/${f.file}`);
+    const img = await RawImage.read(`${DIR}/${id}/${f.file}`);
     const { pooler_output } = await vision(await processor(img));
     const ranked = rank(bank, Array.from(pooler_output.data));
     rows.push({ truth: id, stream: itemStream(id), ranked, title: f.title });
@@ -79,7 +95,7 @@ const wrongConfident = rows
 
 const md = `# Vision evaluation
 
-Model: \`${MODEL}\` (${DTYPE}), vision tower in ONNX, labels embedded offline. ${base.n} real photos of ${Object.keys(per).length} catalog items from Wikimedia Commons search results (search results, not hand-picked; ${skipped} photos that plainly did not show the item were removed, each listed with its reason in eval/excluded.json). Speed: ${msPerImage.toFixed(0)} ms/image on a laptop CPU (Node, not WebGPU).
+Model: \`${MODEL}\` (${DTYPE}), vision tower in ONNX, labels embedded offline. ${base.n} real photos of ${Object.keys(per).length} catalog items ${OWN ? 'photographed by the author with a phone, none removed after seeing the result' : `from Wikimedia Commons search results (not hand-picked; ${skipped} photos that plainly did not show the item were removed, each listed with its reason in eval/excluded.json)`}. Speed: ${msPerImage.toFixed(0)} ms/image on a laptop CPU (Node, not WebGPU).
 
 | Metric | Result |
 | --- | --- |
@@ -106,5 +122,5 @@ ${sweep.map((s) => `| ${s.cs} | ${s.ci} | ${s.cov} | ${pct(s.ok, s.cov)} |`).joi
 | --- | --- | --- | --- |
 ${Object.entries(per).map(([id, p]) => `| ${itemById(id)?.name.en ?? id} | ${p.n} | ${p.item} | ${p.stream} |`).join('\n')}
 `;
-await fs.writeFile('eval/RESULTS.md', md);
+await fs.writeFile(OUT, md);
 console.log(md.split('\n').slice(0, 16).join('\n'));
