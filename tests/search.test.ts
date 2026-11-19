@@ -52,6 +52,19 @@ describe('search', () => {
     expect(top(q)).toBe(id);
   });
 
+  it.each([
+    ['What bin does a milk carton go in?', 'drink_carton'],
+    ['Where should I recycle a broken drinking glass?', 'drinking_glass'],
+    ['Which bin should a wine bottle go into?', 'glass_bottle'],
+    ['Where can we dispose of a button cell?', 'battery'],
+    ['¿En qué contenedor se pone una caja de pizza con grasa?', 'pizza_box'],
+    ['¿Dónde se tiran las botellas verdes de vino?', 'glass_bottle'],
+    ['¿En qué cubo puedo echar el aceite usado?', 'cooking_oil'],
+    ['¿Dónde se recicla un espejo?', 'mirror'],
+  ])('understands the item in the question "%s"', (question, id) => {
+    expect(top(question)).toBe(id);
+  });
+
   it('tolerates typos', () => {
     expect(top('botela de plastico')).toBe('plastic_bottle');
     expect(top('servilleat')).toBe('napkin');
