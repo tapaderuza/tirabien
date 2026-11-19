@@ -58,6 +58,7 @@ node scripts/fetch-eval-images.mjs && npm run eval   # re-measure accuracy
 
 ## Limits, stated plainly
 
+- Objects outside the 73-item catalog are not recognised as "unknown": a camera lens photo, for example, came back as a confident "CD/DVD". The "not waste" labels only cover people, animals, scenes, screens, stages, nature and abstract images. Extending the catalog and adding an "unknown object" label is the next improvement.
 - Málaga only. Rules and data are the city's; other municipalities differ.
 - The rules are a careful reading of public guidance, not an official source. A few Málaga-specific details (for example which bulky items Limasam collects free) should be confirmed with Limasam before relying on them. Each answer links the sources it follows; corrections are welcome as issues.
 - OpenStreetMap lists only 27 brown (organic) bins in the city, so the map for food waste is sparse; the app says when a stream has little or no data.
