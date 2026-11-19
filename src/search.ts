@@ -128,10 +128,21 @@ function scoreTerm(qText: string, qToks: string[], term: Term): number {
   return queryCoverage * (0.7 + 0.25 * termCoverage);
 }
 
+/** Remove disposal-question wording while preserving material and condition clues. */
+function searchSubject(query: string): string {
+  const text = normalize(query);
+  const spanish = /^(?:donde|(?:en |a )?que (?:cubo|contenedor)) (?:(?:se )?(?:tiran?|ponen?|echan?|depositan?|reciclan?|van?)|(?:puedo|debo) (?:tirar|poner|echar|depositar|reciclar)|(?:tiro|pongo|echo|deposito|reciclo)) /;
+  if (spanish.test(text)) return text.replace(spanish, '');
+  const english = /^where (?:should|can|do) (?:i|we) (?:recycle|put|throw away|throw|dispose of) /;
+  if (english.test(text)) return text.replace(english, '');
+  const binQuestion = /^(?:what|which) bin (?:does|do|should|can) (.+?) (?:go in|go into|go)$/;
+  return text.match(binQuestion)?.[1] ?? text;
+}
+
 /** Ranked items for a free-text query in Spanish or English. */
 export function search(index: SearchIndex, query: string, limit = 5): SearchHit[] {
-  const qText = normalize(query);
-  const qToks = tokens(query);
+  const qText = searchSubject(query);
+  const qToks = tokens(qText);
   if (!qText) return [];
   const hits: SearchHit[] = [];
   for (const { item, terms } of index.entries) {
