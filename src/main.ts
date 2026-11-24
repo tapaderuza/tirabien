@@ -5,7 +5,7 @@ import { buildAnswer, makeFinder, type Answer, type Finder, type StreamPlaces } 
 import { decide, type EmbeddingBankJson } from './classify';
 import { ITEMS, itemById, itemStream } from './catalog';
 import { MALAGA_CENTRE, formatDistance, type ContainerData, type LatLon } from './geo';
-import { QUICK, tr, type Key } from './i18n';
+import { QUICK, SAMPLES, tr, type Key } from './i18n';
 import { addReport, listReports, localStore, reportsText } from './reports';
 import { buildIndex, search } from './search';
 import { sourceById } from './sources';
@@ -60,6 +60,7 @@ function shell(): void {
         </div>
         <ul id="suggest" class="suggest" role="listbox"></ul>
         <div class="quick" id="quick"></div>
+        <div class="quick samples" id="samples"></div>
         <p class="privacy" id="privacy"></p>
       </section>
       <div id="status" class="status" role="status" aria-live="polite" hidden></div>
@@ -83,6 +84,9 @@ function renderStatic(): void {
   (document.getElementById('datacredit') as HTMLElement).textContent = t('data');
   (document.getElementById('quick') as HTMLElement).innerHTML =
     `<span>${esc(t('tryThese'))}:</span>` + QUICK.map((q) => `<button type="button" data-q="${esc(q.query)}">${esc(q.label[lang])}</button>`).join('');
+  (document.getElementById('samples') as HTMLElement).innerHTML =
+    `<span>${esc(t('trySample'))}:</span>` +
+    SAMPLES.map((s) => `<button type="button" data-sample="${s.file}">📷 ${esc(s.label[lang])}</button>`).join('');
   (document.getElementById('legend') as HTMLElement).innerHTML =
     `<h2>${esc(t('bins'))}</h2><div class="bins">` +
     STREET_BINS.map((id) => {
@@ -146,6 +150,10 @@ function bindShell(): void {
     if (top) choose(top.item.id);
   });
   (document.getElementById('photo') as HTMLInputElement).addEventListener('change', onPhoto);
+  document.getElementById('samples')!.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-sample]');
+    if (b) void onSample(b.dataset.sample!);
+  });
 }
 
 function setStatus(msg: string | null, progress?: number): void {
@@ -169,7 +177,23 @@ async function onPhoto(ev: Event): Promise<void> {
   const input = ev.target as HTMLInputElement;
   const file = input.files?.[0];
   input.value = '';
-  if (!file || !vision) return;
+  if (file) await classifyPhoto(file);
+}
+
+/** One tap on a sample photo (public/samples) goes through exactly the same on-device path as a camera photo. */
+async function onSample(name: string): Promise<void> {
+  try {
+    const res = await fetch(`${base}samples/${name}.jpg`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    await classifyPhoto(new File([await res.blob()], `${name}.jpg`, { type: 'image/jpeg' }));
+  } catch (e) {
+    console.error(e);
+    setStatus(t('modelError'));
+  }
+}
+
+async function classifyPhoto(file: File): Promise<void> {
+  if (!vision) return;
   const photoUrl = URL.createObjectURL(file);
   try {
     setStatus(t('analysing'));

@@ -34,6 +34,7 @@ const STRINGS = {
   sources: { es: 'Fuentes de la regla', en: 'Rule sources' },
   lookFor: { es: 'Cómo reconocerlo', en: 'How to spot it' },
   tryThese: { es: 'Prueba con', en: 'Try' },
+  trySample: { es: 'Probar con foto de ejemplo', en: 'Try a sample photo' },
   disclaimer: {
     es: 'Las reglas están escritas a mano a partir de guías oficiales de Limasam, Ecoembes y Ecovidrio. La IA solo reconoce el objeto; nunca decide el contenedor. Ante la duda, pregunta a Limasam.',
     en: 'Rules are hand-written from official Limasam, Ecoembes and Ecovidrio guides. The AI only recognises the object; it never decides the bin. When in doubt, ask Limasam.',
@@ -60,6 +61,14 @@ export type Key = keyof typeof STRINGS;
 export function tr(key: Key, lang: Lang): string {
   return STRINGS[key][lang];
 }
+
+/** Sample photos in public/samples (credits in public/samples/CREDITS.md): common Spanish sorting traps. */
+export const SAMPLES: { file: string; label: Text }[] = [
+  { file: 'brik', label: { es: 'Brik de leche', en: 'Milk carton' } },
+  { file: 'receipt', label: { es: 'Ticket térmico', en: 'Till receipt' } },
+  { file: 'glass', label: { es: 'Vaso de cristal', en: 'Drinking glass' } },
+  { file: 'capsule', label: { es: 'Cápsula de café', en: 'Coffee capsule' } },
+];
 
 export const QUICK: { query: string; label: Text }[] = [
   { query: 'brik', label: { es: 'brik', en: 'carton' } },
