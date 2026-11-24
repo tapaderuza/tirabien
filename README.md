@@ -25,7 +25,7 @@ Measured on 272 real Wikimedia Commons photos of 37 items (search results, not h
 | Exact item in the top 3 | 84.6 % |
 | Speed in the browser (WASM, CPU) | about 2 s per photo |
 
-The confidence threshold was picked from the sweep in that report using the same photos, so read 96.8 % as optimistic. Below the threshold the app shows its top candidates and asks instead of guessing. Not evaluated: photos taken on a phone in a kitchen, and items outside the 73 in the catalog.
+The confidence threshold was picked from the sweep in that report using the same photos, so read 96.8 % as optimistic. Below the threshold the app shows its top candidates and asks instead of guessing. **Phone photos.** On 40 photos the author took at home with a phone (18 items, none removed) the bin is right 91.7 % when confident (11/12) and 70.0 % if forced to answer every photo; see [`eval/RESULTS-phone.md`](eval/RESULTS-phone.md), which also records a catalog change that was tried and rejected because it hurt the held-out set. Not evaluated: items outside the 73 in the catalog.
 
 ## Run it
 
