@@ -89,8 +89,8 @@ export const ITEMS: Item[] = [
   {
     id: 'detergent_bottle',
     stream: 'yellow',
-    name: t('Bote de detergente, champú o gel', 'Detergent, shampoo or shower gel bottle'),
-    synonyms: ['detergente', 'suavizante', 'lejia', 'champu', 'gel', 'friegasuelos', 'detergent bottle', 'shampoo bottle', 'bleach bottle'],
+    name: t('Bote de plástico (detergente, champú, gel o salsa)', 'Plastic bottle for detergent, shampoo, shower gel or sauce'),
+    synonyms: ['detergente', 'suavizante', 'lejia', 'champu', 'gel', 'friegasuelos', 'bote de salsa', 'ketchup', 'mayonesa', 'detergent bottle', 'shampoo bottle', 'bleach bottle', 'sauce bottle', 'squeeze bottle'],
     prompts: ['an empty plastic detergent bottle', 'an empty shampoo bottle', 'a plastic bleach bottle'],
     tip: t('Vacío y cerrado. Es un envase aunque sea de limpieza.', 'Empty and closed. It is packaging even if it held cleaning products.'),
   },
