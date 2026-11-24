@@ -334,3 +334,9 @@ footer {
   font-size: 0.82rem;
   color: var(--muted);
 }
+
+/* "Wrong answer?" (kept on the phone only) */
+.wrong { margin-top: 14px; border-top: 1px solid #e3e6df; padding-top: 10px; }
+.wrong summary { cursor: pointer; color: #0f766e; font-weight: 600; }
+.wrong input { width: 100%; margin: 8px 0 4px; padding: 10px 12px; border: 1px solid #cfd5cc; border-radius: 10px; font: inherit; }
+.wrong button { margin: 4px 6px 4px 0; }

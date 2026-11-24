@@ -6,6 +6,7 @@ import { decide, type EmbeddingBankJson } from './classify';
 import { ITEMS, itemById, itemStream } from './catalog';
 import { MALAGA_CENTRE, formatDistance, type ContainerData, type LatLon } from './geo';
 import { QUICK, tr, type Key } from './i18n';
+import { addReport, listReports, localStore, reportsText } from './reports';
 import { buildIndex, search } from './search';
 import { sourceById } from './sources';
 import { STREAMS, STREET_BINS, streamById } from './streams';
@@ -221,8 +222,9 @@ function renderResult(): void {
       .join('')}</div>`;
 
   if (!current.itemId) {
-    el.innerHTML = `<article class="card">${photo}<p class="notice">${esc(t(current.note ?? 'noMatch'))}</p>${current.candidates ? chips(current.candidates) : ''}</article>`;
+    el.innerHTML = `<article class="card">${photo}<p class="notice">${esc(t(current.note ?? 'noMatch'))}</p>${current.candidates ? chips(current.candidates) : ''}${wrongBlock()}</article>`;
     bindChips(el);
+    bindWrong(el);
     return;
   }
 
@@ -264,8 +266,10 @@ function renderResult(): void {
         <span class="muted">${esc(t(locationMessage))}</span>
       </div>
       <p class="sources"><b>${esc(t('sources'))}:</b> ${sources}</p>
+      ${wrongBlock()}
     </article>`;
   bindChips(el);
+  bindWrong(el);
   document.getElementById('gps')?.addEventListener('click', useLocation);
   drawMap(main, alt);
 }
@@ -276,9 +280,62 @@ function bindChips(el: HTMLElement): void {
   );
 }
 
+/** "Wrong answer?": the user says what it really was; kept only in localStorage. */
+function wrongBlock(): string {
+  return `<details class="wrong">
+      <summary>${esc(t('wrong'))}</summary>
+      <p class="muted">${esc(t('wrongAsk'))}</p>
+      <input id="wrong-q" type="search" autocomplete="off" aria-label="${esc(t('searchPlaceholder'))}" placeholder="${esc(t('searchPlaceholder'))}" />
+      <ul id="wrong-suggest" class="suggest"></ul>
+      <button type="button" data-wrong-item="">${esc(t('wrongNone'))}</button>
+      <p id="wrong-msg" class="muted" role="status"></p>
+      <button type="button" id="wrong-copy" hidden>${esc(t('wrongCopy'))}</button>
+    </details>`;
+}
+
+function bindWrong(el: HTMLElement): void {
+  const box = el.querySelector<HTMLDetailsElement>('details.wrong');
+  if (!box) return;
+  const q = box.querySelector<HTMLInputElement>('#wrong-q')!;
+  const list = box.querySelector<HTMLUListElement>('#wrong-suggest')!;
+  const msg = box.querySelector<HTMLElement>('#wrong-msg')!;
+  const copy = box.querySelector<HTMLButtonElement>('#wrong-copy')!;
+  const store = localStore();
+  const nameOf = (id: string) => itemById(id)?.name[lang] ?? id;
+  q.addEventListener('input', () => {
+    list.innerHTML = search(index, q.value, 4)
+      .map((h) => `<li><button type="button" data-wrong-item="${h.item.id}">${esc(h.item.name[lang])}</button></li>`)
+      .join('');
+  });
+  box.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-wrong-item]');
+    if (b && current) {
+      const all = addReport(store, { shown: current.itemId, actual: b.dataset.wrongItem ?? '', photo: !!current.photoUrl });
+      msg.textContent = `${t('wrongSaved')} (${all.length})`;
+      list.innerHTML = '';
+      q.value = '';
+      copy.hidden = false;
+    }
+  });
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(reportsText(listReports(store), nameOf));
+      msg.textContent = t('wrongCopied');
+    } catch {
+      msg.textContent = reportsText(listReports(store), nameOf);
+    }
+  });
+  if (listReports(store).length) copy.hidden = false;
+}
+
 function drawMap(main: StreamPlaces, alt?: StreamPlaces): void {
   const host = document.getElementById('map');
   if (!host) return;
+  if (!navigator.onLine) {
+    // Map tiles need the network; the nearest-container list above is computed on the phone.
+    host.outerHTML = `<p class="callout info">${esc(t('offlineMap'))}</p>`;
+    return;
+  }
   map = L.map(host, { scrollWheelZoom: false }).setView(from, 15);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -326,6 +383,10 @@ async function boot(): Promise<void> {
     if (total > 0) setStatus(t('loadingModel'), (100 * loaded) / total);
   });
   (window as unknown as { __tirabien: unknown }).__tirabien = { streams: STREAMS.length, items: ITEMS.length };
+  // Installable and offline: public/sw.js caches the app, its data and (after the first photo) the AI model.
+  if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.register(`${base}sw.js`).catch((e) => console.warn('service worker', e));
+  }
 }
 
 boot().catch((e) => {

@@ -43,6 +43,16 @@ const STRINGS = {
     en: 'Containers: Ayuntamiento de Málaga open data (CC BY 4.0) and OpenStreetMap contributors (ODbL).',
   },
   bins: { es: 'Los cinco contenedores de calle', en: 'The five street bins' },
+  wrong: { es: '¿Respuesta incorrecta?', en: 'Wrong answer?' },
+  wrongAsk: { es: '¿Qué era en realidad? Se guarda solo en este móvil; no se envía nada.', en: 'What was it really? Saved on this phone only; nothing is sent.' },
+  wrongNone: { es: 'No está en la lista', en: 'Not in the list' },
+  wrongSaved: { es: 'Gracias. Guardado solo en este móvil.', en: 'Thanks. Saved on this phone only.' },
+  wrongCopy: { es: 'Copiar mis informes para enviarlos', en: 'Copy my reports to send them' },
+  wrongCopied: { es: 'Copiado. Pégalo en un correo si quieres compartirlo.', en: 'Copied. Paste it into an email if you want to share it.' },
+  offlineMap: {
+    es: 'Sin conexión: el mapa necesita internet. La lista de contenedores de arriba sí está al día.',
+    en: 'Offline: the map needs a connection. The container list above is up to date.',
+  },
 } satisfies Record<string, Text>;
 
 export type Key = keyof typeof STRINGS;
