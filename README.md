@@ -5,6 +5,8 @@ Point your phone at any item (or type its name) and TiraBien tells you **which b
 - **AI runs on your device.** A SigLIP vision model (ONNX, ~100 MB, cached after the first use) runs in a web worker. Photos are never uploaded; there is no account and no backend.
 - **The AI never decides the bin.** It only recognises *which catalog item* the photo looks like. The bin comes from 73 hand-written rules based on public Limasam, Ecoembes and Ecovidrio guidance (not audited by Limasam; see Limits). When the model is unsure it says so and asks you to pick.
 - **Real data.** 14,400 container locations: Ayuntamiento de Málaga open data (glass, clothes, oil, batteries; CC BY 4.0) and OpenStreetMap (yellow, blue, grey, brown bins, clean points, pharmacies; ODbL). Nearest-container search uses a grid index verified against brute force.
+- **Works with no signal.** Installable as an app (web manifest) with a service worker: after the first visit, search, photo recognition and the nearest-container list work offline; only the map tiles need a connection, and the app says so.
+- **"Wrong answer?"** on every result: you say what it really was, the report is kept on your phone only, and you can copy your reports as text to send them if you want. Nothing is sent automatically.
 
 **Live demo: https://tapaderuza.github.io/tirabien/**
 
