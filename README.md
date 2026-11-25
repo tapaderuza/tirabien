@@ -16,6 +16,13 @@ Point your phone at any item (or type its name) and TiraBien tells you **which b
 
 In Spain roughly three in ten items in the yellow bin are not packaging at all (Ecoembes' own characterisation figures, 28.6 % in 2020). The mistakes are systematic and predictable: drink cartons put in the blue bin, thermal receipts and dirty napkins treated as paper, drinking glasses in the glass igloo, toys and toothbrushes in the yellow bin because they are plastic. TiraBien answers exactly those cases, with the reason.
 
+## How the model decides
+
+- **Zero-shot SigLIP** (`Xenova/siglip-base-patch16-224`, int8 ONNX) in a Web Worker. There is no labelled dataset of Malaga's bins, so nothing is trained: 77 text labels (70 catalog items, each the average of two or three plain-English phrasings, plus 7 "not waste" labels such as a person, an animal or a screen) are embedded offline by `scripts/build-embeddings.mjs`. Only the vision tower ships.
+- **The bin, not the item.** `decide()` in [`src/classify.ts`](src/classify.ts) adds up the probability of every item that goes in the same bin. Exact item top-1 is 65.8 %, but the right bin comes out 79.4 % of the time.
+- **Three levels plus a refusal.** Confident (bin probability ≥ 0.9 and item ≥ 0.45), likely (asks you to confirm), unsure (shows its top three and asks you to pick), and "not waste" when those labels hold more than half the probability.
+- **The AI never picks the bin.** It only says which catalog item the photo looks like; the bin, the reason and the usual mistake come from the hand-written catalog with its sources.
+
 ## How good is the vision?
 
 Measured on 272 real Wikimedia Commons photos of 37 items (search results, not hand-picked; 22 photos that plainly did not show the item were removed and are listed with reasons in [`eval/excluded.json`](eval/excluded.json)). Full report: [`eval/RESULTS.md`](eval/RESULTS.md).
