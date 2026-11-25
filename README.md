@@ -33,7 +33,7 @@ The confidence threshold was picked from the sweep in that report using the same
 
 ```bash
 npm install
-npm test          # 75 unit tests
+npm test          # 88 unit tests
 npm run dev       # http://localhost:5173
 npm run build     # static site in dist/
 ```
