@@ -76,7 +76,7 @@ node scripts/fetch-eval-images.mjs && npm run eval   # re-measure accuracy
 
 ## AI assistance
 
-This project was designed and written with an AI coding assistant (Claude Code), which also chose the concept from options researched for the author. The author reviews it and is responsible for what is published. Disposal rules were written from public guidance, not from Limasam's internal data.
+The author chose the concept and the Malaga focus from options researched with an AI coding assistant (Claude Code), which was then used to design and write the code. The author reviews it and is responsible for what is published. Disposal rules were written from public guidance, not from Limasam's internal data.
 
 ## Licence
 
